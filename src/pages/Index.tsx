@@ -1,36 +1,24 @@
 import { useState, useEffect } from 'react';
 import { BCIStatus } from '../components/BCIStatus';
 import { ConfusionGraph } from '../components/ConfusionGraph';
-import { BrainActivity } from '../components/BrainActivity';
-import { MathProblem } from '../components/MathProblem';
 import { ChatBot } from '../components/ChatBot';
-import { HelpOverlay } from '../components/HelpOverlay';
 import { Brain, Zap, Activity } from 'lucide-react';
 
 const Index = () => {
   const [confusionLevel, setConfusionLevel] = useState(20);
   const [isConnected, setIsConnected] = useState(true);
-  const [showHelp, setShowHelp] = useState(false);
 
   // Simulate real-time confusion level updates
   useEffect(() => {
     const interval = setInterval(() => {
       setConfusionLevel(prev => {
         const change = (Math.random() - 0.5) * 20;
-        const newLevel = Math.max(0, Math.min(100, prev + change));
-        
-        // Trigger help when confusion is high
-        if (newLevel > 75 && !showHelp) {
-          setShowHelp(true);
-          setTimeout(() => setShowHelp(false), 5000);
-        }
-        
-        return newLevel;
+        return Math.max(0, Math.min(100, prev + change));
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [showHelp]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
@@ -59,20 +47,11 @@ const Index = () => {
       {/* Main Dashboard */}
       <main className="relative z-10 p-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          
-          {/* Left Panel - Math Problem */}
-          <div className="lg:col-span-1">
-            <MathProblem />
+          <div className="lg:col-span-2">
+            <ChatBot inline />
           </div>
-
-          {/* Center Panel - Confusion Graph */}
           <div className="lg:col-span-1">
             <ConfusionGraph confusionLevel={confusionLevel} />
-          </div>
-
-          {/* Right Panel - Brain Activity */}
-          <div className="lg:col-span-1">
-            <BrainActivity confusionLevel={confusionLevel} />
           </div>
         </div>
 
@@ -143,11 +122,6 @@ const Index = () => {
         </div>
       </main>
 
-      {/* Floating Chatbot */}
-      <ChatBot />
-
-      {/* Help Overlay */}
-      {showHelp && <HelpOverlay onClose={() => setShowHelp(false)} />}
     </div>
   );
 };
